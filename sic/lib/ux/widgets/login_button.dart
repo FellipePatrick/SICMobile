@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sic/rotas.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({super.key});
@@ -17,7 +18,8 @@ class LoginButton extends StatelessWidget {
           elevation: 5,
         ),
         onPressed: () {
-          // Lógica do login aqui
+          // Lógica do login aquionTap: () {
+          Navigator.pushNamed(context, AppRoutes.home);
         },
         child: const Text(
           "Entrar",

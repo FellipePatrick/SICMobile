@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sic/rotas.dart';
 import 'package:sic/ux/widgets/action_button.dart';
-import 'package:sic/ux/widgets/drawer_header.dart';
+import 'package:sic/ux/widgets/app_bar.dart';
+import 'package:sic/ux/widgets/drawer.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -12,34 +14,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Color(0xFF0c6dfd),
-        title: const Text(
-          '',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {},
-          ),
-        ],
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
-      ),
+      appBar: CustomAppBar(),
+      drawer: CustomDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -79,7 +55,9 @@ class _HomePageState extends State<HomePage> {
               icon: Icons.camera_alt_outlined,
               label: "Processar Imagem",
               backgroundColor: Color(0xFF0c6dfd),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.processo);
+              },
             ),
             const SizedBox(height: 30),
             ActionButton(
@@ -87,7 +65,9 @@ class _HomePageState extends State<HomePage> {
               label: "Tutorial",
               backgroundColor: Colors.white,
               textColor: Color(0xFF0c6dfd),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.tutorial);
+              },
             ),
             const SizedBox(height: 60),
             Center(
@@ -102,37 +82,11 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, AppRoutes.processo);
+        },
         backgroundColor: Color(0xFF0c6dfd),
         child: const Icon(Icons.biotech, color: Colors.white),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeaderWidget(),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Página Inicial'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_circle),
-              title: const Text('Perfil'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Configurações'),
-              onTap: () {},
-            ),
-            ListTile(
-              leading: const Icon(Icons.exit_to_app),
-              title: const Text('Sair'),
-              onTap: () {},
-            ),
-          ],
-        ),
       ),
     );
   }
