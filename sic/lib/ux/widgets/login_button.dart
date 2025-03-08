@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sic/rotas.dart';
+import 'package:sic/services/rotas.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({super.key});

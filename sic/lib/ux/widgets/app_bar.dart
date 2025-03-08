@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sic/rotas.dart';
+import 'package:sic/services/rotas.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -11,7 +11,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Navigator.pushNamed(context, AppRoutes.home);
         },
         child: const Text(
-          'Aplicativo SIC',
+          'SIC - Zoonoses',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -23,7 +23,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.account_circle, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, AppRoutes.perfil);
+          },
         ),
       ],
       leading: Builder(

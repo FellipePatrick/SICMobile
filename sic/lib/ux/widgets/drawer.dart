@@ -1,4 +1,4 @@
-import 'package:sic/rotas.dart';
+import 'package:sic/services/rotas.dart';
 import 'package:sic/ux/widgets/drawer_header.dart';
 import 'package:flutter/material.dart';
 
@@ -20,12 +20,23 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.account_circle),
             title: const Text('Perfil'),
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.perfil);
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Configurações'),
-            onTap: () {},
+            leading: const Icon(Icons.camera_alt_outlined),
+            title: const Text('Processar Imagem'),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.processo);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Tutorial'),
+            onTap: () {
+              Navigator.pushNamed(context, AppRoutes.tutorial);
+            },
           ),
           ListTile(
             leading: const Icon(Icons.exit_to_app),

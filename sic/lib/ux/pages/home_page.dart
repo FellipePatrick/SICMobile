@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sic/rotas.dart';
+import 'package:sic/services/rotas.dart';
 import 'package:sic/ux/widgets/action_button.dart';
 import 'package:sic/ux/widgets/app_bar.dart';
 import 'package:sic/ux/widgets/drawer.dart';
@@ -16,7 +16,8 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       appBar: CustomAppBar(),
       drawer: CustomDrawer(),
-      body: Padding(
+      body: SingleChildScrollView(
+        // Envolvendo o conteúdo com o SingleChildScrollView para permitir rolagem infinita
         padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

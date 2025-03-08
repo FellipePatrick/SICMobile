@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:sic/rotas.dart';
+import 'package:sic/services/rotas.dart';
 import 'package:sic/ux/widgets/app_bar.dart';
 import 'package:sic/ux/widgets/drawer.dart';
 
@@ -10,67 +10,75 @@ class TutorialPage extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(),
       drawer: CustomDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            const Text(
-              "Tipos de Imagens para Análise",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.blueAccent,
-              ),
-            ),
-            const SizedBox(height: 40),
-            const Text(
-              "O sistema recebe dois tipos de imagens para análise: \n\n"
-              "🔍 Imagens com zoom: Imagens direto do microscópio.\n\n"
-              "📷 Imagens sem zoom: Imagens retiradas com suporte no microscópio.",
-              textAlign: TextAlign.start,
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 50),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _buildOptionButton(
-                  context,
-                  Icons.zoom_in,
-                  "Com Zoom",
-                  Colors.blueAccent,
-                  [
-                    'img/imgComzoom1.jpeg',
-                    'img/imgComzoom2.jpeg',
-                    'img/imgComzoom3.jpeg'
-                  ], // Lista de imagens com zoom
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40),
+              const Text(
+                "Tipos de Imagens para Análise",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF0c6dfd),
                 ),
-                const SizedBox(width: 20),
-                _buildOptionButton(
-                  context,
-                  Icons.zoom_out,
-                  "Sem Zoom",
-                  Colors.green,
-                  [
-                    'img/imgSemzoom1.jpeg',
-                    'img/imgSemzoom2.jpeg',
-                    'img/imgSemzoom3.jpeg'
-                  ], // Lista de imagens sem zoom
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Center(
-              child: Image.asset(
-                'img/cardImage.png',
-                fit: BoxFit.contain,
-                width: double.infinity,
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 40),
+              const Text(
+                "O sistema recebe dois tipos de imagens para análise: \n\n"
+                "🔍 Imagens com zoom: Imagens direto do microscópio.\n\n"
+                "📷 Imagens sem zoom: Imagens retiradas com suporte no microscópio.",
+                textAlign: TextAlign.start,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 50),
+
+              // Centralizar os botões
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildOptionButton(
+                      context,
+                      Icons.zoom_in,
+                      "Com Zoom",
+                      const Color(0xFF0c6dfd),
+                      [
+                        'img/imgComzoom1.jpeg',
+                        'img/imgComzoom2.jpeg',
+                        'img/imgComzoom3.jpeg'
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    _buildOptionButton(
+                      context,
+                      Icons.zoom_out,
+                      "Sem Zoom",
+                      Colors.green,
+                      [
+                        'img/imgSemzoom1.jpeg',
+                        'img/imgSemzoom2.jpeg',
+                        'img/imgSemzoom3.jpeg'
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 50),
+
+              const SizedBox(height: 20),
+              Center(
+                child: Image.asset(
+                  'img/cardImage.png',
+                  fit: BoxFit.contain,
+                  width: double.infinity,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -149,13 +157,11 @@ class TutorialPage extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        const Color(0xFF0c6dfd), // Cor do botão Fechar
+                    backgroundColor: const Color(0xFF0c6dfd),
                   ),
                   child: const Text(
                     "Fechar",
-                    style:
-                        TextStyle(color: Colors.white), // Cor da fonte branca
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ],
