@@ -2,10 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sic/ux/widgets/app_bar.dart';
 import 'package:sic/ux/widgets/drawer.dart';
 import 'package:sic/ux/widgets/pdf_generator.dart';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ProcessoPage extends StatefulWidget {
   @override
@@ -28,7 +31,8 @@ class _ProcessoPageState extends State<ProcessoPage> {
     final base64String = prefs.getString('saved_image');
     if (base64String != null) {
       final bytes = base64Decode(base64String);
-      final tempDir = Directory.systemTemp;
+      final tempDir =
+          await getTemporaryDirectory(); // Obtém o diretório temporário
       final file = File('${tempDir.path}/temp_image.png');
       await file.writeAsBytes(bytes);
       setState(() {
@@ -43,33 +47,117 @@ class _ProcessoPageState extends State<ProcessoPage> {
 
     if (pickedFile != null) {
       final file = File(pickedFile.path);
-      final bytes = await file.readAsBytes();
-      final base64String = base64Encode(bytes);
 
       final prefs = await SharedPreferences.getInstance();
+      final bytes = await file.readAsBytes();
+      final base64String = base64Encode(bytes);
       await prefs.setString('saved_image', base64String);
 
       setState(() {
         _image = file;
       });
+
+      // Após a seleção da imagem, faça o upload com a flag 'zoom'
+      await uploadImageWithZoom(file, _zoom);
+    }
+  }
+
+  Future<void> uploadImageWithZoom(File file, bool zoom) async {
+    var url = Uri.parse('http://192.168.0.108:8081/Mobilefile/');
+
+    var request = http.MultipartRequest('POST', url);
+
+    // Adiciona o arquivo de imagem à requisição
+    var fileBytes = await file.readAsBytes();
+    var multipartFile = http.MultipartFile.fromBytes(
+      'files',
+      fileBytes,
+      filename: file.uri.pathSegments.last, // Nome original da imagem
+      contentType: MediaType('image', 'jpeg'), // Ajuste para o tipo de imagem
+    );
+    request.files.add(multipartFile);
+
+    // Adiciona o parâmetro 'zoom' como string ('true' ou 'false')
+    request.fields['zoom'] = zoom.toString();
+
+    try {
+      // Envia a requisição
+      var response = await request.send();
+
+      // Verifica se a requisição foi bem-sucedida
+      if (response.statusCode == 200) {
+        print('Upload bem-sucedido!');
+        String responseBody = await response.stream.bytesToString();
+        print('Resposta do servidor: $responseBody');
+
+        // Decodificando a resposta JSON
+        var jsonResponse = jsonDecode(responseBody);
+
+        // Verifica se a chave 'imageUrls' existe e extrai a URL da imagem
+        if (jsonResponse['imageUrls'] != null &&
+            jsonResponse['imageUrls'].isNotEmpty) {
+          String imageUrl = jsonResponse['imageUrls'][0];
+
+          // Baixa a imagem usando a URL
+          var imageResponse = await http.get(Uri.parse(imageUrl));
+
+          if (imageResponse.statusCode == 200) {
+            // Salva a imagem em SharedPreferences como base64
+            final prefs = await SharedPreferences.getInstance();
+            String base64Image = base64Encode(imageResponse.bodyBytes);
+            await prefs.setString('saved_image', base64Image);
+            print('Imagem salva em SharedPreferences');
+          } else {
+            print(
+                'Falha ao baixar a imagem. Status code: ${imageResponse.statusCode}');
+          }
+        } else {
+          print('URL da imagem não encontrada na resposta.');
+        }
+      } else {
+        print('Falha ao fazer o upload. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Erro ao enviar o arquivo: $e');
     }
   }
 
   Future<void> _generatePdf() async {
-    if (_image == null || _isGeneratingPdf) return;
+    if (_isGeneratingPdf) return;
 
     setState(() {
       _isGeneratingPdf = true; // Ativa o loading
     });
 
-    String diagnostico = """
-      A análise da imagem identificou a presença de elementos compatíveis com parasitas do gênero *Toxocara spp*.
-      Esta zoonose pode ser transmitida para humanos e animais através da ingestão de ovos do parasita.
-      
-      Recomenda-se a consulta com um veterinário para confirmação do diagnóstico e aplicação do tratamento adequado.
-    """;
+    // Carrega a imagem de SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    final base64String = prefs.getString('saved_image');
 
-    await PdfGenerator.generatePdf(_image!, diagnostico);
+    if (base64String == null) {
+      print("Nenhuma imagem salva encontrada em SharedPreferences.");
+      setState(() {
+        _isGeneratingPdf = false;
+      });
+      return;
+    }
+
+    // Decodifica a imagem base64
+    final bytes = base64Decode(base64String);
+
+    // Cria um arquivo temporário com a imagem
+    final tempDir = Directory.systemTemp;
+    final tempFile = File('${tempDir.path}/temp_image.png');
+    await tempFile.writeAsBytes(bytes);
+
+    String diagnostico = """
+    A análise da imagem identificou a presença de elementos compatíveis com parasitas do gênero *Toxocara spp*.
+    Esta zoonose pode ser transmitida para humanos e animais através da ingestão de ovos do parasita.
+    
+    Recomenda-se a consulta com um veterinário para confirmação do diagnóstico e aplicação do tratamento adequado.
+  """;
+
+    // Gere o PDF com a imagem carregada
+    await PdfGenerator.generatePdf(tempFile, diagnostico);
 
     setState(() {
       _isGeneratingPdf = false; // Desativa o loading após gerar o PDF
@@ -231,15 +319,14 @@ class _ProcessoPageState extends State<ProcessoPage> {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Colors.green,
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12)),
-                          elevation: 5,
                         ),
-                      ),
+                      )
               ],
             ],
           ),

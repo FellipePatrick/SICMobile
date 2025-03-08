@@ -3,11 +3,11 @@ import 'package:sic/services/rotas.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(const Sic());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class Sic extends StatelessWidget {
+  const Sic({super.key});
 
   @override
   Widget build(BuildContext context) {
